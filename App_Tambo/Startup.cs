@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using App_Tambo.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace App_Tambo
 {
     public class Startup
@@ -31,11 +34,28 @@ namespace App_Tambo
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "App_Tambo", Version = "v1" });
             });
+
+            services.AddCors();
+
+            var conexion = Configuration.GetConnectionString("cn1");
+
+            services.AddDbContext<BDTAMBOContext>(
+                options => options.UseSqlServer(conexion));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(
+                opcion => {
+                    //opcion.WithOrigins("http://", "");
+                    opcion.AllowAnyOrigin();
+                    opcion.AllowAnyHeader();
+                    opcion.AllowAnyMethod();
+                }
+            );
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
